@@ -33,8 +33,13 @@ export default function Home(props) {
         name: name
       })
     });
-    const newItem = await res.json();
-    // TODO: Handle failure cases as well
+
+    let newItem;
+    if(res.status >= 300) {
+      newItem = { ...temp, error: "create" };
+    } else {
+      newItem = await res.json();
+    }
 
     const newItems = tmpItems.map((i) => {
       if(i.id == temp.id) return newItem;
@@ -55,7 +60,7 @@ export default function Home(props) {
     });
     setItems(tmpItems);
     
-    const res = fetch('/api/change-status', {
+    const res = await fetch('/api/change-status', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -65,9 +70,16 @@ export default function Home(props) {
         status: newStatus
       })
     });
-    // TODO: Handle failure case here as well
 
-    const newItem = { ...item, status: newStatus };
+    let newItem;
+    if(res.status >= 300) {
+      newItem = { ...item, status: newStatus, error: "change-status" };
+    } else {
+      newItem = { ...item, status: newStatus, error: null };
+    }
+
+    console.log(item);
+    console.log(newItem);
     const newItems = items.map(i => {
       if(i.id === id) return newItem;
       else return i;
@@ -78,10 +90,6 @@ export default function Home(props) {
   const itemElems = items.map((item) => {
     let button;
     let checkbox;
-    
-    if(item.status === 0) button = <>
-      <button onClick={() => changeStatus(item.id, 2)} disabled={item.loading}>❌</button>
-    </>;
 
     if(item.status === 0 || item.status === 1) {
       checkbox = <input type="checkbox" checked={item.status === 1} onChange={ evt => {
@@ -90,6 +98,7 @@ export default function Home(props) {
         changeStatus(item.id, newStatus);
       }} />;
     }
+
     let classes = ["grid", "grid-cols-3", "gap-4"];
     if(item.status === 1 || item.status === 2) {
       classes.push('text-gray-600');
@@ -97,6 +106,17 @@ export default function Home(props) {
     if(item.status === 1) {
       classes.push('line-through');
     }
+    if(item.error) {
+      classes.push('underline');
+      classes.push('text-red-600');
+      classes.push('font-bold');
+    }
+
+    if(item.status === 0) button = <button onClick={() => changeStatus(item.id, 2)} disabled={item.loading}>❌</button>
+    if(item.error) button = <button onClick={() => {
+      if(item.error === "create") console.log("TODO: retry createItem here");
+      else changeStatus(item.id, item.status)
+    }}>🔄</button>
 
     return <div key={item.id} className={classes.join(' ')}>
       <div className="text-right">{checkbox}</div>
