@@ -24,7 +24,7 @@ export default function Home(props) {
     const tmpItems = [...items, temp];
     setItems(tmpItems);
 
-    const res = await fetch('/api/hello', {
+    const res = await fetch('/api/create-item', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
