@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Router from 'next/router';
 import { Item } from '/lib/stuff'
 import { withIronSessionSsr } from 'iron-session/next'
 
@@ -98,7 +99,11 @@ export default function Home(props) {
   }
 
   const logout = async () => {
-    console.log("TODO: Log out");
+    const res = await fetch('/api/logout', {
+      method: 'POST'
+  });
+
+  if(res.status < 300) Router.push("/login");
   }
 
   const itemElems = items.map((item) => {
@@ -148,7 +153,7 @@ export default function Home(props) {
     </div>;
   });
 
-  return (<div className="grid place-items-center">
+  return (<div className="grid grid-cols-1 place-items-center">
       <div className="shadow border rounded w-6/12 mb-4 py-4 bg-white">
         {itemElems}
       </div>
