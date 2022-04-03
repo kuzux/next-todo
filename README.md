@@ -1,5 +1,8 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Running db migrations
+Using [goose](https://github.com/pressly/goose) as the db migration tool. Use `goose -dir migrations sqlite3 ./stuff.db up` to run the migrations. For installation instructions: see https://pressly.github.io/goose/installation
+
 ## Getting Started
 
 First, run the development server:
