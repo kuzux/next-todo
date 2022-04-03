@@ -168,7 +168,7 @@ export default function Home(props) {
         createItem(evt.target.name.value);
       }}>
         <input name="name" className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" required />
-        <button type="submit" className="bg-white hover:bg-pink-500 text-pink-500 hover:text-white font-bold py-2 px-4 border border-pink-700 rounded">Create New Item</button>
+        <button type="submit" className="bg-white hover:bg-pink-500 text-pink-500 hover:text-white font-bold py-2 px-4 mx-4 border border-pink-700 rounded">Create New Item</button>
       </form>
   </div>);
 }

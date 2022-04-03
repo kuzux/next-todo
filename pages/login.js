@@ -1,6 +1,13 @@
 import Router from 'next/router';
+import { useState } from 'react';
 
 export default function Login() {
+    const [error, setError] =  useState(null);
+    let errorElem;
+    if(error) {
+        errorElem = <p className="bg-red-200 border border-red-500 p-2 mb-4">{error}</p>;
+    }
+
     return <div className="grid grid-cols-1 place-items-center">
         <form className="block p-6 rounded shadow bg-white max-w-sm" onSubmit={async (event) => {
             event.preventDefault();
@@ -14,8 +21,15 @@ export default function Login() {
                 })
             });
 
-            if(res.status < 300) Router.push("/");
+            if(res.status < 300) {
+                Router.push("/");
+            } else {
+                const data = await res.json();
+                console.log(data);
+                setError(data.error);
+            }
         }}>
+            {errorElem}
             <div className="form-group mb-6">
                 <label htmlFor="username" className="form-label">Username</label>
                 <input name="username" className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" />
