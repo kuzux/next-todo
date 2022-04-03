@@ -8,6 +8,6 @@ export default async function handler(req, res) {
     return;
   }
 
-  const item = await Item.create(req.body);
+  const item = Item.addItem(req.body.name);
   res.status(200).json(item);
 }

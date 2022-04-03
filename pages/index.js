@@ -86,6 +86,8 @@ export default function Home(props) {
     let button;
     let checkbox;
 
+    let textStatus = Item.statuses[item.status];
+
     if(item.status === 0 || item.status === 1) {
       checkbox = <input type="checkbox" checked={item.status === 1} onChange={ evt => {
         let newStatus = 0;
@@ -141,6 +143,6 @@ export default function Home(props) {
 }
 
 export async function getServerSideProps(context) {
-  const items = await Item.findAll({ raw: true });
+  const items = Item.allItems();
   return { props: { items } };
 }
