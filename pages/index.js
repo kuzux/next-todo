@@ -1,17 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Item } from '/lib/stuff'
+import { withIronSessionSsr } from 'iron-session/next'
 
 export default function Home(props) {
   const [items, setItems] = useState(props.items);
-
-  useEffect(() => {
-    fetch('/api/change-status', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-  }, []);
 
   const createItem = async (name) => {
     const date = new Date().toISOString();
@@ -105,6 +97,10 @@ export default function Home(props) {
     }
   }
 
+  const logout = async () => {
+    console.log("TODO: Log out");
+  }
+
   const itemElems = items.map((item) => {
     let button;
     let checkbox;
@@ -157,6 +153,11 @@ export default function Home(props) {
         {itemElems}
       </div>
 
+      <p className="mb-4">
+        Logged in as {props.username}
+        <button className="bg-white hover:bg-pink-500 text-pink-500 hover:text-white py-1 px-2 mx-4 border border-pink-700 rounded" onClick={logout}>Logout</button>
+      </p>
+
       <form onSubmit = {(evt) => {
         evt.preventDefault();
         createItem(evt.target.name.value);
@@ -167,7 +168,18 @@ export default function Home(props) {
   </div>);
 }
 
-export async function getServerSideProps(context) {
+export const getServerSideProps = withIronSessionSsr(async function ({ req, res }) {
+  const user = req.session?.user;
+  if(!user) {
+    res.setHeader('location', '/login');
+    res.statusCode = 302;
+    res.end();
+    return {};
+  }
+
   const items = Item.allItems();
-  return { props: { items } };
-}
+  return { props: { items, username: user } };
+}, {
+  password: 'Frjr2nmBergaBUiWVyQYYrEpiJ4bt6Lq',
+  cookieName: 'next-todo'
+});
