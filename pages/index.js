@@ -49,7 +49,7 @@ export default function Home(props) {
     const item = items.find(i => i.id === id);
     
     const tmpItem = { ...item, status: newStatus, loading: true };
-    await setItems((items) => {
+    setItems((items) => {
       return items.map(i => {
         if(i.id === id) return tmpItem;
         else return i;
@@ -82,26 +82,50 @@ export default function Home(props) {
     });
   }
 
+  const deleteItem = async (id) => {
+    const item = items.find(i => i.id === id);
+    setItems((items) => {
+      return items.filter(i => i.id !== id);
+    });
+
+    const res = await fetch('/api/change-status', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id,
+        status: Item.statuses.deleted
+      })
+    });
+
+    if(res.status >= 300) {
+      const newItem = { ...item, error: 'delete' }
+      setItems((items) => [...items, newItem]);
+    }
+  }
+
   const itemElems = items.map((item) => {
     let button;
     let checkbox;
 
     let textStatus = Item.statuses[item.status];
 
-    if(item.status === 0 || item.status === 1) {
-      checkbox = <input type="checkbox" checked={item.status === 1} onChange={ evt => {
-        let newStatus = 0;
-        if(evt.target.checked) newStatus = 1;
+    if(item.status === Item.statuses.todo || item.status === Item.statuses.completed) {
+      checkbox = <input type="checkbox" checked={item.status === Item.statuses.completed} onChange={ evt => {
+        let newStatus = Item.statuses.todo;
+        if(evt.target.checked) newStatus = Item.statuses.completed;
         changeStatus(item.id, newStatus);
       }} />;
     }
 
     let classes = ["grid", "grid-cols-3", "gap-4"];
-    if(item.status === 1 || item.status === 2) {
+    if(item.status === Item.statuses.completed) {
       classes.push('text-gray-600');
-    }
-    if(item.status === 1) {
       classes.push('line-through');
+    }
+    if( item.status === Item.statuses.ignored) {
+      classes.push('text-gray-400');
     }
     if(item.error) {
       classes.push('underline');
@@ -109,14 +133,17 @@ export default function Home(props) {
       classes.push('font-bold');
     }
 
-    if(item.status === 0) button = <button onClick={() => changeStatus(item.id, 2)} disabled={item.loading}>❌</button>
+    if(item.status === Item.statuses.todo) button = <button onClick={() => changeStatus(item.id, Item.statuses.ignored)} disabled={item.loading}>❌</button>
+    if(item.status === Item.statuses.ignored) button = <button onClick={() => deleteItem(item.id)} disabled={item.loading}>🗑</button>
     if(item.error) button = <button onClick={async () => {
       if(item.error === "create") {
         const newItems = items.filter((i) => i.id !== item.id);
-        await setItems(newItems);
+        setItems(newItems);
         createItem(item.name);
+      } else if(item.error === "delete") {
+        deleteItem(item.id);
       } else {
-        changeStatus(item.id, item.status)
+        changeStatus(item.id, item.status);
       }
     }}>🔄</button>
 
