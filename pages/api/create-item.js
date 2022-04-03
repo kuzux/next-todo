@@ -8,6 +8,11 @@ export default async function handler(req, res) {
     return;
   }
 
-  const item = Item.addItem(req.body.name);
+  if(!req.body.name || !req.body.userId) {
+    res.status(400).send();
+    return;
+  }
+
+  const item = Item.addItem(req.body.name, req.body.userId);
   res.status(200).json(item);
 }
