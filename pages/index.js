@@ -109,8 +109,6 @@ export default function Home(props) {
     let button;
     let checkbox;
 
-    let textStatus = Item.statuses[item.status];
-
     if(item.status === Item.statuses.todo || item.status === Item.statuses.completed) {
       checkbox = <input type="checkbox" checked={item.status === Item.statuses.completed} onChange={ evt => {
         let newStatus = Item.statuses.todo;
