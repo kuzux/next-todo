@@ -13,16 +13,12 @@ export default function Home(props) {
     });
   }, []);
 
-  const createItem = async (event) => {
-    event.preventDefault();
-
-    const name = event.target.name.value;
+  const createItem = async (name) => {
     const date = new Date().toISOString();
     const temp = { id: crypto.randomUUID(), name: name, createdAt: date, status: -1, loading: true };
 
     // We add a preliminary item, and "fix" its status after receiving the response
-    const tmpItems = [...items, temp];
-    setItems(tmpItems);
+    setItems((items) => [...items, temp]);
 
     const res = await fetch('/api/create-item', {
       method: 'POST',
@@ -41,24 +37,24 @@ export default function Home(props) {
       newItem = await res.json();
     }
 
-    const newItems = tmpItems.map((i) => {
-      if(i.id == temp.id) return newItem;
-      else return i;
+    setItems((items) => {
+      return items.map((i) => {
+        if(i.id == temp.id) return newItem;
+        else return i;
+      });
     });
-
-    setItems(newItems);
-    console.log(newItems);
   };
 
   const changeStatus = async (id, newStatus) => {
     const item = items.find(i => i.id === id);
     
     const tmpItem = { ...item, status: newStatus, loading: true };
-    const tmpItems = items.map(i => {
-      if(i.id === id) return tmpItem;
-      else return i;
+    await setItems((items) => {
+      return items.map(i => {
+        if(i.id === id) return tmpItem;
+        else return i;
+      });
     });
-    setItems(tmpItems);
     
     const res = await fetch('/api/change-status', {
       method: 'POST',
@@ -78,13 +74,12 @@ export default function Home(props) {
       newItem = { ...item, status: newStatus, error: null };
     }
 
-    console.log(item);
-    console.log(newItem);
-    const newItems = items.map(i => {
-      if(i.id === id) return newItem;
-      else return i;
+    setItems((items) => {
+      return items.map(i => {
+        if(i.id === id) return newItem;
+        else return i;
+      });
     });
-    setItems(newItems);
   }
 
   const itemElems = items.map((item) => {
@@ -113,9 +108,14 @@ export default function Home(props) {
     }
 
     if(item.status === 0) button = <button onClick={() => changeStatus(item.id, 2)} disabled={item.loading}>❌</button>
-    if(item.error) button = <button onClick={() => {
-      if(item.error === "create") console.log("TODO: retry createItem here");
-      else changeStatus(item.id, item.status)
+    if(item.error) button = <button onClick={async () => {
+      if(item.error === "create") {
+        const newItems = items.filter((i) => i.id !== item.id);
+        await setItems(newItems);
+        createItem(item.name);
+      } else {
+        changeStatus(item.id, item.status)
+      }
     }}>🔄</button>
 
     return <div key={item.id} className={classes.join(' ')}>
@@ -130,7 +130,10 @@ export default function Home(props) {
         {itemElems}
       </div>
 
-      <form onSubmit = {createItem}>
+      <form onSubmit = {(evt) => {
+        evt.preventDefault();
+        createItem(evt.target.name.value);
+      }}>
         <input name="name" className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" required />
         <button type="submit" className="bg-white hover:bg-pink-500 text-pink-500 hover:text-white font-bold py-2 px-4 border border-pink-700 rounded">Create New Item</button>
       </form>
