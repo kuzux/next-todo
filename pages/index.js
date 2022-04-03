@@ -119,7 +119,7 @@ export default function Home(props) {
       }} />;
     }
 
-    let classes = ["grid", "grid-cols-3", "gap-4"];
+    let classes = ["grid", "grid-cols-3", "gap-2", "group", "hover:bg-gray-50", "py-1"];
     if(item.status === Item.statuses.completed) {
       classes.push('text-gray-600');
       classes.push('line-through');
@@ -148,9 +148,9 @@ export default function Home(props) {
     }}>🔄</button>
 
     return <div key={item.id} className={classes.join(' ')}>
-      <div className="text-right">{checkbox}</div>
+      <div className="text-right invisible group-hover:visible">{checkbox}</div>
       <div>{item.name}</div>
-      <div>{button}</div>
+      <div className="invisible group-hover:visible">{button}</div>
     </div>;
   });
 
