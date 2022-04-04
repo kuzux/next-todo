@@ -11,5 +11,8 @@ export default withIronSessionApiRoute(async (req, res) => {
     }
 }, {
     password: 'Frjr2nmBergaBUiWVyQYYrEpiJ4bt6Lq',
-    cookieName: 'next-todo'
+    cookieName: 'next-todo',
+    cookieOptions: {
+        secure: process.env.NODE_ENV === 'production',
+    },
 });

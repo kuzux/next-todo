@@ -186,5 +186,8 @@ export const getServerSideProps = withIronSessionSsr(async function ({ req, res 
   return { props: { items, username: user } };
 }, {
   password: 'Frjr2nmBergaBUiWVyQYYrEpiJ4bt6Lq',
-  cookieName: 'next-todo'
+  cookieName: 'next-todo',
+  cookieOptions: {
+    secure: process.env.NODE_ENV === 'production',
+  },
 });
