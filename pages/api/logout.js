@@ -1,12 +1,9 @@
 import { withIronSessionApiRoute } from 'iron-session/next'
+import { rejectUnauthorized, sessionInfo } from '/lib/session';
 
 export default withIronSessionApiRoute(async (req, res) => {
+    if(rejectUnauthorized(req, res)) return;
+
     await req.session.destroy();
     res.status(204).send();
-}, {
-    password: 'Frjr2nmBergaBUiWVyQYYrEpiJ4bt6Lq',
-    cookieName: 'next-todo',
-    cookieOptions: {
-        secure: process.env.NODE_ENV === 'production',
-    },
-});
+}, sessionInfo);

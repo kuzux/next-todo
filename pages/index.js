@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Router from 'next/router';
 import { Item } from '/lib/stuff'
 import { withIronSessionSsr } from 'iron-session/next'
+import { sessionInfo } from '/lib/session';
 
 export default function Home(props) {
   const [items, setItems] = useState(props.items);
@@ -184,10 +185,4 @@ export const getServerSideProps = withIronSessionSsr(async function ({ req, res 
 
   const items = Item.allItems();
   return { props: { items, user } };
-}, {
-  password: 'Frjr2nmBergaBUiWVyQYYrEpiJ4bt6Lq',
-  cookieName: 'next-todo',
-  cookieOptions: {
-    secure: process.env.NODE_ENV === 'production',
-  },
-});
+}, sessionInfo);

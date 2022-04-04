@@ -1,4 +1,5 @@
 import { withIronSessionApiRoute } from 'iron-session/next'
+import { sessionInfo } from '/lib/session';
 import { User } from '/lib/stuff';
 
 export default withIronSessionApiRoute(async (req, res) => {
@@ -9,12 +10,6 @@ export default withIronSessionApiRoute(async (req, res) => {
         await req.session.save();
         res.json({ user: req.session.user });
     } else {
-        res.status(401).json({ error: "Wrong usename/password" })
+        res.status(401).json({ error: "Wrong usename/password" });
     }
-}, {
-    password: 'Frjr2nmBergaBUiWVyQYYrEpiJ4bt6Lq',
-    cookieName: 'next-todo',
-    cookieOptions: {
-        secure: process.env.NODE_ENV === 'production',
-    },
-});
+}, sessionInfo);
