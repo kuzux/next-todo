@@ -1,18 +1,17 @@
 import { Item } from "/lib/stuff";
 import { rejectUnauthorized, withSessionInfo } from '/lib/session';
-import { withIronSessionApiRoute } from 'iron-session/next'
+import { requireMethod, requireParameter } from "/lib/responseHelpers";
 
 export default withSessionInfo((req, res) => {
-    if(req.method !== 'POST') {
-        res.status(405).send();
-        return;
-    }
+    if(requireMethod(req, res, 'POST')) return;
     if(rejectUnauthorized(req, res)) return;
 
-    const id = req.body.id;
-    const status = req.body.status;
+    if(requireParameter(req, res, 'id')) return;
+    if(requireParameter(req, res, 'status')) return;
+    const { id, status } = req.body;
+    
     if(status < 0 || status > Item.statuses.length) {
-        res.status(400).send();
+        res.status(400).json({ error: "Invalid status value" });
         return;
     }
 

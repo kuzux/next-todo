@@ -1,14 +1,11 @@
 import { User } from "/lib/stuff";
+import { requireMethod, requireParameter } from "/lib/responseHelpers";
 
 export default async function handler(req, res) {
-    if(req.method !== 'POST') {
-        res.status(405).send();
-        return;
-    }
-    if(!req.body.username || !req.body.password) {
-        res.status(400).send();
-        return;
-    }
+    if(requireMethod(req, res, 'POST')) return;
+
+    if(requireParameter(req, res, 'username')) return;
+    if(requireParameter(req, res, 'password')) return;
 
     const uid = await User.signup(req.body.username, req.body.password);
     if(!uid) {

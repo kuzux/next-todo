@@ -2,19 +2,14 @@
 
 import { Item } from "/lib/stuff";
 import { rejectUnauthorized, withSessionInfo } from '/lib/session';
-import { withIronSessionApiRoute } from 'iron-session/next';
+import { requireMethod, requireParameter } from "/lib/responseHelpers";
 
 export default withSessionInfo((req, res) => {
-  if(req.method !== 'POST') {
-    res.status(405).send();
-    return;
-  }
+  if(requireMethod(req, res, 'POST')) return;
   if(rejectUnauthorized(req, res)) return;
 
-  if(!req.body.name || !req.body.userId) {
-    res.status(400).send();
-    return;
-  }
+  if(requireParameter(req, res, 'name')) return;
+  if(requireParameter(req, res, 'userId')) return;
 
   const item = Item.addItem(req.body.name, req.body.userId);
   res.status(200).json(item);
