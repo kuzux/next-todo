@@ -7,7 +7,7 @@ import { sessionInfo } from '/lib/session';
 export default function Home(props) {
   const [items, setItems] = useState(props.items);
 
-  const createItem = async (name) => {
+  const createItem = async (name, userId) => {
     const date = new Date().toISOString();
     const temp = { id: crypto.randomUUID(), name: name, createdAt: date, status: -1, loading: true };
 
@@ -20,7 +20,8 @@ export default function Home(props) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        name: name
+        name,
+        userId
       })
     });
 
@@ -139,7 +140,7 @@ export default function Home(props) {
       if(item.error === "create") {
         const newItems = items.filter((i) => i.id !== item.id);
         setItems(newItems);
-        createItem(item.name);
+        createItem(item.name, item.userId);
       } else if(item.error === "delete") {
         deleteItem(item.id);
       } else {
@@ -166,7 +167,7 @@ export default function Home(props) {
 
       <form onSubmit = {(evt) => {
         evt.preventDefault();
-        createItem(evt.target.name.value);
+        createItem(evt.target.name.value, props.user.id);
       }}>
         <input name="name" className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" required />
         <button type="submit" className="bg-white hover:bg-pink-500 text-pink-500 hover:text-white font-bold py-2 px-4 mx-4 border border-pink-700 rounded">Create New Item</button>
@@ -183,6 +184,6 @@ export const getServerSideProps = withIronSessionSsr(async function ({ req, res 
     return {};
   }
 
-  const items = Item.allItems();
+  const items = Item.itemsByUser(user.id);
   return { props: { items, user } };
 }, sessionInfo);
