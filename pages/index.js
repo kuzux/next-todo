@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import Router from 'next/router';
 import { Item } from '/lib/stuff'
-import { withIronSessionSsr } from 'iron-session/next'
-import { sessionInfo, rejectUnauthorized } from '/lib/session';
+import { withSessionInfo, rejectUnauthorized } from '/lib/session';
 
 export default function Home(props) {
   const [items, setItems] = useState(props.items);
@@ -175,10 +174,10 @@ export default function Home(props) {
   </div>);
 }
 
-export const getServerSideProps = withIronSessionSsr(async function ({ req, res }) {
+export const getServerSideProps = withSessionInfo(async function ({ req, res }) {
   if(rejectUnauthorized(req, res)) return {};
 
   const user = req.session.user;
   const items = Item.itemsByUser(user.id);
   return { props: { items, user } };
-}, sessionInfo);
+});

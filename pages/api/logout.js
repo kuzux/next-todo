@@ -1,9 +1,8 @@
-import { withIronSessionApiRoute } from 'iron-session/next'
-import { rejectUnauthorized, sessionInfo } from '/lib/session';
+import { rejectUnauthorized, withSessionInfo } from '/lib/session';
 
-export default withIronSessionApiRoute(async (req, res) => {
+export default withSessionInfo(async (req, res) => {
     if(rejectUnauthorized(req, res)) return;
 
     await req.session.destroy();
     res.status(204).send();
-}, sessionInfo);
+});

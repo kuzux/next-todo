@@ -1,8 +1,8 @@
 import { Item } from "/lib/stuff";
-import { rejectUnauthorized, sessionInfo } from '/lib/session';
+import { rejectUnauthorized, withSessionInfo } from '/lib/session';
 import { withIronSessionApiRoute } from 'iron-session/next'
 
-export default withIronSessionApiRoute((req, res) => {
+export default withSessionInfo((req, res) => {
     if(req.method !== 'POST') {
         res.status(405).send();
         return;
@@ -22,4 +22,4 @@ export default withIronSessionApiRoute((req, res) => {
         res.status(204).send();
     else
         res.status(404).send();
-}, sessionInfo);
+});
