@@ -159,7 +159,7 @@ export default function Home(props) {
       </div>
 
       <p className="mb-4">
-        Logged in as {props.username}
+        Logged in as {props.user.username}
         <button className="bg-white hover:bg-pink-500 text-pink-500 hover:text-white py-1 px-2 mx-4 border border-pink-700 rounded" onClick={logout}>Logout</button>
       </p>
 
@@ -183,7 +183,7 @@ export const getServerSideProps = withIronSessionSsr(async function ({ req, res 
   }
 
   const items = Item.allItems();
-  return { props: { items, username: user } };
+  return { props: { items, user } };
 }, {
   password: 'Frjr2nmBergaBUiWVyQYYrEpiJ4bt6Lq',
   cookieName: 'next-todo',
