@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Router from 'next/router';
 import { Item } from '/lib/stuff'
 import { withIronSessionSsr } from 'iron-session/next'
-import { sessionInfo } from '/lib/session';
+import { sessionInfo, rejectUnauthorized } from '/lib/session';
 
 export default function Home(props) {
   const [items, setItems] = useState(props.items);
@@ -156,14 +156,14 @@ export default function Home(props) {
   });
 
   return (<div className="grid grid-cols-1 place-items-center">
-      <div className="shadow border rounded w-6/12 mb-4 py-4 bg-white">
-        {itemElems}
-      </div>
-
-      <p className="mb-4">
+      <p className="my-2">
         Logged in as {props.user.username}
         <button className="bg-white hover:bg-pink-500 text-pink-500 hover:text-white py-1 px-2 mx-4 border border-pink-700 rounded" onClick={logout}>Logout</button>
       </p>
+
+      <div className="shadow border rounded w-6/12 mb-4 py-4 bg-white">
+        {itemElems}
+      </div>
 
       <form onSubmit = {(evt) => {
         evt.preventDefault();
@@ -176,14 +176,9 @@ export default function Home(props) {
 }
 
 export const getServerSideProps = withIronSessionSsr(async function ({ req, res }) {
-  const user = req.session?.user;
-  if(!user) {
-    res.setHeader('location', '/login');
-    res.statusCode = 302;
-    res.end();
-    return {};
-  }
+  if(rejectUnauthorized(req, res)) return {};
 
+  const user = req.session.user;
   const items = Item.itemsByUser(user.id);
   return { props: { items, user } };
 }, sessionInfo);
