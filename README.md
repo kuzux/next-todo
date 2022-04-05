@@ -3,6 +3,9 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 ## Running db migrations
 Using [goose](https://github.com/pressly/goose) as the db migration tool. Use `goose -dir migrations sqlite3 ./stuff.db up` to run the migrations. For installation instructions: see https://pressly.github.io/goose/installation
 
+## Linting
+Use `npm run lint` to see errors. `npm run lint -- --fix` to auto-fix them
+
 ## Getting Started
 
 First, run the development server:
