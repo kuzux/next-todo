@@ -4,14 +4,30 @@ import { Item } from '/lib/stuff'
 import { withSessionInfo, rejectUnauthorized } from '/lib/session';
 
 export default function Home(props) {
+    // [{ id?, name, status, userId, createdAt, loading?, error? }]
     const [items, setItems] = useState(props.items);
 
-    const createItem = async (name, userId) => {
+    // takes the item as an object
+    // if the object already has an id, replaces the item with that id first (for retries)
+    // if not, generates a temporary id for the item (until response is received) and adds it to the end
+    const createItem = async (item) => {
         const date = new Date().toISOString();
-        const temp = { id: crypto.randomUUID(), name: name, createdAt: date, status: -1, loading: true };
+        item.createdAt = date;
 
-        // We add a preliminary item, and "fix" its status after receiving the response
-        setItems((items) => [...items, temp]);
+        if(item.id === undefined || item.id === null) {
+            const temp = { ...item, id: crypto.randomUUID(), status: -1, loading: true, error: null };
+            item = temp;
+
+            // We add a preliminary item, and "fix" its status after receiving the response
+            setItems((items) => [...items, temp]);
+        } else {
+            setItems((items) => {
+                return items.map((i) => {
+                    if(i.id == item.id) return item;
+                    else return i;
+                });
+            });
+        }
 
         const res = await fetch('/api/create-item', {
             method: 'POST',
@@ -19,21 +35,21 @@ export default function Home(props) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                name,
-                userId
+                name: item.name,
+                userId: item.userId
             })
         });
 
         let newItem;
         if(res.status >= 300) {
-            newItem = { ...temp, error: "create" };
+            newItem = { ...item, error: "create" };
         } else {
             newItem = await res.json();
         }
 
         setItems((items) => {
             return items.map((i) => {
-                if(i.id == temp.id) return newItem;
+                if(i.id == item.id) return newItem;
                 else return i;
             });
         });
@@ -137,9 +153,7 @@ export default function Home(props) {
         if(item.status === Item.statuses.ignored) button = <button onClick={() => deleteItem(item.id)} disabled={item.loading}>🗑</button>
         if(item.error) button = <button onClick={async () => {
             if(item.error === "create") {
-                const newItems = items.filter((i) => i.id !== item.id);
-                setItems(newItems);
-                createItem(item.name, item.userId);
+                createItem(item);
             } else if(item.error === "delete") {
                 deleteItem(item.id);
             } else {
@@ -166,7 +180,7 @@ export default function Home(props) {
 
         <form onSubmit = {(evt) => {
             evt.preventDefault();
-            createItem(evt.target.name.value, props.user.id);
+            createItem({ name: evt.target.name.value, userId: props.user.id });
         }}>
             <input name="name" className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" required />
             <button type="submit" className="bg-white hover:bg-pink-500 text-pink-500 hover:text-white font-bold py-2 px-4 mx-4 border border-pink-700 rounded">Create New Item</button>
