@@ -60,15 +60,22 @@ export default function Login() {
         }}>
             {errorElem}
             <div className="form-group mb-6">
-                <label htmlFor="username" className="form-label">Username</label>
-                <input name="username" className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" />
+                <p className="font-bold m-2">
+                    <label htmlFor="username" className="form-label">Username</label>
+                </p>
+                <input type="text" name="username"
+                    className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                    placeholder="JohnDoe" />
             </div>
             <div className="form-group mb-6">
-                <label htmlFor="password" className="form-label">Password</label>
-                <input name="password" className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="password" />
+                <p className="font-bold m-2">
+                    <label htmlFor="password" className="form-label">Password</label>
+                </p>
+                <input type="password" name="password"
+                    className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
             </div>
+            <button type="submit" value="signup" className="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 mr-2 border border-pink-700 rounded">Signup</button>
             <button type="submit" value="login" className="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 mx-2 border border-pink-700 rounded">Login</button>
-            <button type="submit" value="signup" className="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 mx-2 border border-pink-700 rounded">Signup</button>
         </form>
     </div>
 }
