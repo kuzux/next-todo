@@ -175,7 +175,7 @@ export default function Home(props) {
 }
 
 export const getServerSideProps = withSessionInfo(async function ({ req, res }) {
-    if(rejectUnauthorized(req, res)) return {};
+    if(rejectUnauthorized(req, res)) return { props: {} };
 
     const user = req.session.user;
     const items = Item.itemsByUser(user.id);
