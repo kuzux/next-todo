@@ -42,7 +42,7 @@ export default function Home(props) {
 
         let newItem;
         if(res.status >= 300) {
-            newItem = { ...item, error: "create" };
+            newItem = { ...item, loading: false, error: "create" };
         } else {
             newItem = await res.json();
         }
@@ -79,9 +79,9 @@ export default function Home(props) {
 
         let newItem;
         if(res.status >= 300) {
-            newItem = { ...item, status: newStatus, error: "change-status" };
+            newItem = { ...item, loading: false, status: newStatus, error: "change-status" };
         } else {
-            newItem = { ...item, status: newStatus, error: null };
+            newItem = { ...item, loading: false, status: newStatus, error: null };
         }
 
         setItems((items) => {
@@ -149,8 +149,17 @@ export default function Home(props) {
             classes.push('font-bold');
         }
 
-        if(item.status === Item.statuses.todo) button = <button onClick={() => changeStatus(item.id, Item.statuses.ignored)} disabled={item.loading}>❌</button>
-        if(item.status === Item.statuses.ignored) button = <button onClick={() => deleteItem(item.id)} disabled={item.loading}>🗑</button>
+        if(item.status === Item.statuses.todo)
+            button = <button onClick={() => changeStatus(item.id, Item.statuses.ignored)} disabled={item.loading}>❌</button>;
+        if(item.status === Item.statuses.completed)
+            button = <button onClick={() => deleteItem(item.id)} disabled={item.loading}>🗑</button>;
+        if(item.status === Item.statuses.ignored)
+            button = <>
+                <button onClick={() => changeStatus(item.id, Item.statuses.todo)} disabled={item.loading}>Undo</button>
+                <button className="mx-4" onClick={() => deleteItem(item.id)} disabled={item.loading}>Delete</button>
+
+            </>;
+
         if(item.error) button = <button onClick={async () => {
             if(item.error === "create") {
                 createItem(item);
