@@ -8,10 +8,10 @@ export default function Login() {
     
     let errorElem;
     if(error) {
-        errorElem = <p className="bg-red-200 border border-red-500 p-2 mb-4">{error}</p>;
+        errorElem = <p id="error-message" className="bg-red-200 border border-red-500 p-2 mb-4">{error}</p>;
     }
     else if(notice) {
-        errorElem = <p className="bg-green-200 border border-green-500 p-2 mb-4">{notice}</p>;
+        errorElem = <p id="success-message" className="bg-green-200 border border-green-500 p-2 mb-4">{notice}</p>;
     }
 
     const login = async (username, password) => {

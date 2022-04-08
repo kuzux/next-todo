@@ -32,3 +32,4 @@ yarn-error.log*
 .vercel
 
 stuff.db
+test.db
