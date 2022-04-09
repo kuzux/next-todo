@@ -19,6 +19,7 @@ test.describe('login and signup', async () => {
         await page.fill('[name=password]', '1234');
 
         await page.click('[value=signup]');
+        await page.waitForTimeout(200);
 
         await expect(page.locator('#success-message')).not.toHaveCount(0);
     });

@@ -135,7 +135,7 @@ export default function Home(props) {
             }} />;
         }
 
-        let classes = ["grid", "grid-cols-3", "gap-2", "group", "hover:bg-gray-50", "py-1"];
+        let classes = ["todo-item", "grid", "grid-cols-3", "gap-2", "group", "hover:bg-gray-50", "py-1"];
         if(item.status === Item.statuses.completed) {
             classes.push('text-gray-600');
             classes.push('line-through');
@@ -150,17 +150,20 @@ export default function Home(props) {
         }
 
         if(item.status === Item.statuses.todo)
-            button = <button onClick={() => changeStatus(item.id, Item.statuses.ignored)} disabled={item.loading}>❌</button>;
+            button = <button value="ignore" 
+                onClick={() => changeStatus(item.id, Item.statuses.ignored)} disabled={item.loading}>❌</button>;
         if(item.status === Item.statuses.completed)
-            button = <button onClick={() => deleteItem(item.id)} disabled={item.loading}>🗑</button>;
+            button = <button value="delete"
+                onClick={() => deleteItem(item.id)} disabled={item.loading}>🗑</button>;
         if(item.status === Item.statuses.ignored)
             button = <>
-                <button onClick={() => changeStatus(item.id, Item.statuses.todo)} disabled={item.loading}>Undo</button>
-                <button className="mx-4" onClick={() => deleteItem(item.id)} disabled={item.loading}>Delete</button>
-
+                <button value="ignore"
+                    onClick={() => changeStatus(item.id, Item.statuses.todo)} disabled={item.loading}>Undo</button>
+                <button value="delete"
+                    className="mx-4" onClick={() => deleteItem(item.id)} disabled={item.loading}>Delete</button>
             </>;
 
-        if(item.error) button = <button onClick={async () => {
+        if(item.error) button = <button value="retry" onClick={async () => {
             if(item.error === "create") {
                 createItem(item);
             } else if(item.error === "delete") {
@@ -192,7 +195,7 @@ export default function Home(props) {
             createItem({ name: evt.target.name.value, userId: props.user.id });
         }}>
             <input name="name" className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" required />
-            <button type="submit" className="bg-white hover:bg-pink-500 text-pink-500 hover:text-white font-bold py-2 px-4 mx-4 border border-pink-700 rounded">Create New Item</button>
+            <button type="submit" value="add" className="bg-white hover:bg-pink-500 text-pink-500 hover:text-white font-bold py-2 px-4 mx-4 border border-pink-700 rounded">Create New Item</button>
         </form>
     </div>);
 }
